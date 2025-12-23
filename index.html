@@ -28,13 +28,14 @@
             text-align: center;
         }
 
-        /* 3. Posicionamiento y tamaño de Logos Superiores (Ajuste de tamaño final) */
+       /* 3. Posicionamiento y tamaño de Logos (Responsivo) */
         
         #logo-izquierda {
             position: absolute;
             top: 15px;
             left: 20px;
-            width: 350px; /* AUMENTADO */
+            width: 350px; 
+            max-width: 45%; /* No permite que ocupe más de casi la mitad de la pantalla */
             height: auto;
             z-index: 10;
         }
@@ -43,7 +44,8 @@
             position: absolute;
             top: 15px;
             right: 20px;
-            width: 180px; /* AUMENTADO */
+            width: 180px; 
+            max-width: 35%; /* Ajuste proporcional para el logo derecho */
             height: auto;
             z-index: 10;
         }
@@ -52,11 +54,46 @@
         nav {
             background-color: var(--color-fondo-nav); 
             padding: 10px 0;
-            margin-top: 180px; /* Separación de logos grandes */
+            margin-top: 180px; 
             border-top: 2px solid var(--color-principal);
             border-bottom: 2px solid var(--color-principal);
             text-align: center;
         }
+
+        /* AJUSTE PARA DISPOSITIVOS MÓVILES (Celulares) */
+        @media (max-width: 600px) {
+            header {
+                min-height: 120px; /* Reduce el espacio del header en móvil */
+                padding-top: 20px;
+            }
+
+            #logo-izquierda {
+                width: 180px; /* Logo más pequeño en móvil */
+                left: 10px;
+                top: 10px;
+            }
+
+            #logo-derecha {
+                width: 100px; /* Logo más pequeño en móvil */
+                right: 10px;
+                top: 10px;
+            }
+
+            nav {
+                margin-top: 100px; /* Reduce el hueco entre logos y menú en móvil */
+            }
+
+            nav li {
+                display: block; /* Los botones del menú se ponen uno debajo del otro */
+                margin: 10px 0;
+            }
+
+            .imagen-cargador {
+                width: 95%; /* La imagen del cargador ocupa casi todo el ancho */
+            }
+        }
+        
+        
 
         nav ul {
             list-style-type: none; 
