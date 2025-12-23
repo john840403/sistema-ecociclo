@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sistemacargadores</title>
+    
+    <style>
+        /* Variables de color de la marca */
+        :root {
+            --color-principal: #87BB00; /* Verde principal */
+            --color-secundario: #572E13; /* Marrón/Café oscuro */
+            --color-fondo-nav: #f0f0f0; /* Fondo que contrasta con las letras */
+        }
+
+        /* 1. Estilos base del body */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 2. Estilos del Header para posicionar los logos */
+        header {
+            position: relative; 
+            min-height: 200px;
+            padding-top: 50px;
+            text-align: center;
+        }
+
+        /* 3. Posicionamiento y tamaño de Logos Superiores (Ajuste de tamaño final) */
+        
+        #logo-izquierda {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            width: 350px; /* AUMENTADO */
+            height: auto;
+            z-index: 10;
+        }
+
+        #logo-derecha {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 180px; /* AUMENTADO */
+            height: auto;
+            z-index: 10;
+        }
+
+        /* 4. Estilos de la Barra de Navegación */
+        nav {
+            background-color: var(--color-fondo-nav); 
+            padding: 10px 0;
+            margin-top: 180px; /* Separación de logos grandes */
+            border-top: 2px solid var(--color-principal);
+            border-bottom: 2px solid var(--color-principal);
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none; 
+            padding: 0;
+            margin: 0;
+            display: inline-block;
+        }
+
+        nav li {
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        nav a {
+            font-weight: bold; /* Negrita */
+            color: var(--color-secundario) !important;
+            text-decoration: none;
+            padding: 5px 10px;
+            transition: color 0.3s ease;
+        }
+        
+        nav a:hover {
+            color: var(--color-principal) !important;
+        }
+        
+        /* 5. Estilos del Título Principal */
+        h1 {
+            color: var(--color-secundario);
+            text-align: center;
+            margin-top: 50px; 
+        }
+
+        /* 6. Centrar y Reducir la Imagen del Cargador (Ajuste de Alto/Ancho) */
+        .imagen-cargador {
+            display: block; 
+            margin: 20px auto;
+            width: 450px; /* Más ancha */
+            height: auto; /* Menos alta */
+            object-fit: contain; /* Mantiene la proporción sin distorsionar */
+            max-width: 90%;
+            border: 2px solid var(--color-principal);
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 7. Centrar y sombrear las imágenes de los usuarios (SOLUCIÓN DE CENTRADO) */
+        .contenedor-usuarios {
+            text-align: center; /* Centra los elementos inline/inline-block */
+            margin-top: 40px;
+            padding: 20px 0;
+        }
+
+        .contenedor-usuarios a {
+            display: inline-block; /* CRÍTICO para centrar */
+            margin: 0 15px;
+            vertical-align: top;
+        }
+
+        .contenedor-usuarios a img {
+            width: 150px;
+            height: 150px; /* Establecido para asegurar uniformidad visual */
+            object-fit: cover; /* Para que la imagen llene el círculo/cuadrado */
+            border: 3px solid var(--color-principal); 
+            border-radius: 50%; /* Círculos */
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.4); /* Sombreado */
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .contenedor-usuarios a img:hover {
+            transform: scale(1.08);
+            box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.6);
+        }
+    </style>
+    </head>
+<body>
+    
+    <header> 
+        <img id="logo-izquierda" src="LOGO ECOCICLO.png" alt="LOGO ECOCICLO">
+        <img id="logo-derecha" src="LOGO CICLOFÉRTIL PNG.png" alt="LOGO CICLOFÉRTIL">
+
+        <h1>NUESTRO TRABAJO IMPULSA CADA ETAPA DEL PROCESO</h1>
+        
+        <img src="Cargador.jpeg" alt="Cargador" class="imagen-cargador"> 
+    </header>
+
+
+    <nav>
+    <ul>
+        <li><a href="informe.html">Informe</a></li>
+        <li><a href="programacion.html">Programación</a></li>
+        <li><a href="checklist.html">Lista de Chequeo</a></li>
+    </ul>
+</nav>
+    
+    <h2>Haz clic en la imagen para acceder (Se requiere clave)</h2>
+
+    <div class="contenedor-usuarios">
+        <a href="#" onclick="verificarAcceso('Arturo'); return false;">
+            <img src="Arturo Cadavid.jpeg" alt="Arturo Cadavid">
+        </a>
+        <a href="#" onclick="verificarAcceso('Diego'); return false;">
+            <img src="Diego Arroyave.jpeg" alt="Diego Arroyave">
+        </a>
+        <a href="#" onclick="verificarAcceso('Jhonny'); return false;">
+            <img src="Jhonny Berrio.jpeg" alt="Jhonny Berrio">
+        </a>
+        <a href="#" onclick="verificarAcceso('Jorge'); return false;">
+            <img src="Jorge Posada.jpeg" alt="Jorge Velez">
+        </a>
+        <a href="#" onclick="verificarAcceso('Juan'); return false;">
+            <img src="Juan Vergara.jpeg" alt="Juan Vergara">
+        </a>
+        <a href="#" onclick="verificarAcceso('Luis'); return false;">
+            <img src="Luis Londoño.jpeg" alt="Luis Londoño">
+        </a>
+    </div>
+
+    <script>
+        const CLAVES_USUARIOS = {
+            'Arturo': '71291042',
+            'Diego': '8433841',
+            'Jhonny': '1047995969',
+            'Jorge': '71951774',
+            'Juan': '1214718346',
+            'Luis': '70193022'
+        };
+
+        function verificarAcceso(nombreUsuario) {
+            const claveIngresada = prompt(`Ingresa la clave de acceso para ${nombreUsuario}:`);
+            const claveCorrecta = CLAVES_USUARIOS[nombreUsuario];
+
+            if (claveIngresada === claveCorrecta) {
+                alert(`¡Acceso concedido para ${nombreUsuario}! Redirigiendo a la Hoja de Registro.`);
+                
+                // CORRECCIÓN: Ahora redirige a registro.html
+                window.location.href = 'registro.html?user=' + encodeURIComponent(nombreUsuario); 
+                
+            } else if (claveIngresada !== null) {
+                alert('Clave incorrecta. Inténtalo de nuevo.');
+            }
+        }
+    </script>
+</body>
+</html>

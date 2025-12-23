@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Chequeo - ECOCICLO</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; padding: 20px; background-color: #f0f2f5; color: #333; text-align: center; }
+        .container { max-width: 600px; margin: 10% auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #0056b3; margin-bottom: 20px; }
+        p { font-size: 18px; margin-bottom: 30px; color: #555; }
+        
+        .btn-enviar { 
+            display: inline-block; 
+            width: 100%; 
+            padding: 20px; 
+            background-color: #4285F4; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-size: 20px; 
+            font-weight: bold; 
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        .btn-enviar:hover { background-color: #357ae8; }
+
+        .btn-volver {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-volver:hover { background-color: #5a6268; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Lista de Chequeo Pre-Operacional</h2>
+    <p>Para registrar la inspección, haz clic en el botón azul. Al terminar, podrás cerrar la pestaña o usar el link de retorno.</p>
+    
+    <button type="button" 
+            onclick="window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSdNxuQymdRVXtITsq8yiIh1c-lNRGInqbvag1YjXVeQs8ZtMw/viewform?usp=header'" 
+            class="btn-enviar">
+        ABRIR FORMULARIO DE GOOGLE
+    </button>
+
+    <button type="button" 
+            onclick="window.location.href='index.html'" 
+            class="btn-volver">
+        ← VOLVER A INICIO
+    </button>
+</div>
+
+</body>
+</html>

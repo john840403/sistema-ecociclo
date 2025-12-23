@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Movimientos</title>
+    <style>
+        /* Estilos básicos para el formulario */
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .formulario { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        label, input, select, button { display: block; width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
+        button[type="submit"] { background-color: #87BB00; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .resultado { margin-top: 20px; padding: 15px; border: 1px solid #572E13; background-color: #e6e6e6; display: none; }
+        
+        /* Estilos para los nuevos botones de tiempo */
+        .time-controls { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .time-controls button { width: 45%; padding: 10px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white;}
+        #btn-inicio { background-color: #28a745; /* Verde para inicio */ }
+        #btn-fin { background-color: #dc3545; /* Rojo para fin */ }
+        #chronometer-display { text-align: center; font-size: 1.2em; font-weight: bold; margin-bottom: 15px; color: #572E13; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="formulario">
+        <h2>Registro de Movimiento</h2>
+        <p>Operario: <strong id="nombre-operario"></strong></p>
+        
+        <form id="registroForm">
+            <input type="hidden" id="operario" name="operario">
+            <input type="hidden" id="tiempoInicio" name="tiempoInicio">
+            <input type="hidden" id="tiempoFin" name="tiempoFin">
+            <input type="hidden" id="duracionSegundos" name="duracionSegundos">
+
+            <label for="tipoMovimiento">Seleccionar Tipo de Movimiento/Material:</label>
+            <select id="tipoMovimiento" name="tipoMovimiento" required>
+                <option value="">-- Seleccione una opción --</option>
+                <option value="Mover Verdes">Mover Verdes</option>
+                <option value="Mover Chipeado">Mover Chipeado</option>
+                <option value="Mover Mat Chip">Mover Mat Chip</option>
+                <option value="Mov Recirculado">Mov Recirculado</option>
+                <option value="Llenar Bunker">Llenar Bunker</option>
+                <option value="Hacer Volteo 1">Hacer Volteo 1</option>
+                <option value="Hacer Volteo 2">Hacer Volteo 2</option>
+                <option value="Llevar zona Zaranda">Llevar zona Zaranda</option>
+                <option value="Surtir Zaranda">Surtir Zaranda</option>
+                <option value="Regar Orgánico">Regar Orgánico</option>
+                <option value="Recoger Orgánico">Recoger Orgánico</option>
+                <option value="Hacer Premezcla">Hacer Premezcla</option>
+                <option value="Mover Premezcla">Mover Premezcla</option>
+                <option value="Voltear Premezcla">Voltear Premezcla</option>
+                <option value="Mover Fino">Mover Fino</option>
+                <option value="Recoger Lote">Recoger Lote</option>
+                <option value="Surtir Empaque">Surtir Empaque</option>
+            </select>
+            
+            <div class="time-controls">
+                <button type="button" id="btn-inicio">Iniciar Actividad</button>
+                <button type="button" id="btn-fin" disabled>Finalizar Actividad</button>
+            </div>
+            <div id="chronometer-display">00:00:00</div>
+
+            <label for="numPaladas">Número de Paladas:</label>
+            <input type="number" id="numPaladas" name="numPaladas" min="1" required>
+
+            <button type="submit" id="btn-submit-registro">Registrar Movimiento</button>
+        </form>
+
+        <div class="resultado" id="resultado-registro">
+            <h3>Registro Exitoso:</h3>
+            <p>Movimiento: <strong id="res-movimiento"></strong></p>
+            <p>Duración: <strong id="res-duracion"></strong></p>
+            <p>Paladas: <strong id="res-paladas"></strong></p>
+            <p>Peso Estimado: <strong id="res-peso"></strong></p>
+        </div>
+    </div>
+
+    <script>
+        // *** PEGA AQUÍ LA URL DE TU APPS SCRIPT DESPLEGADA ***
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzupUs_dZbaOG0Nltm2j9zAU3keVqZIZz38SgZHtSfwBU2-bWtFqSokrDhmCQPQgACo-g/exec'; 
+        
+        const PESO_POR_PALADA = {
+            'Mover Verdes': 500, 'Mover Chipeado': 650, 'Mover Mat Chip': 600,
+            'Mov Recirculado': 550, 'Llenar Bunker': 700, 'Hacer Volteo 1': 450,
+            'Hacer Volteo 2': 450, 'Llevar zona Zaranda': 580, 'Surtir Zaranda': 620,
+            'Regar Orgánico': 400, 'Recoger Orgánico': 420, 'Hacer Premezcla': 530,
+            'Mover Premezcla': 530, 'Voltear Premezcla': 480, 'Mover Fino': 590,
+            'Recoger Lote': 610, 'Surtir Empaque': 510
+        };
+
+        let startTime = null;
+        let endTime = null;
+        let timerInterval = null;
+        // Obtenemos referencias a los elementos una vez que el DOM esté cargado
+        let display, btnInicio, btnFin, btnSubmit;
+        let calculatedWeight = 0; 
+
+        function formatTime(seconds) {
+            const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const s = String(Math.floor(seconds % 60) % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function iniciarCronometro() {
+            if (startTime) return;
+            startTime = new Date();
+            btnInicio.disabled = true;
+            btnFin.disabled = false;
+            // No ocultamos el botón de submit, solo validamos al final
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diffSeconds = Math.round((now - startTime) / 1000);
+                display.textContent = formatTime(diffSeconds);
+            }, 1000);
+        }
+
+        function finalizarCronometro() {
+            if (!startTime || endTime) return;
+            endTime = new Date();
+            clearInterval(timerInterval);
+            btnFin.disabled = true;
+            const durationMs = endTime - startTime;
+            const durationSeconds = Math.round(durationMs / 1000);
+            document.getElementById('tiempoInicio').value = startTime.toISOString();
+            document.getElementById('tiempoFin').value = endTime.toISOString();
+            document.getElementById('duracionSegundos').value = durationSeconds;
+            display.textContent = formatTime(durationSeconds) + " (Finalizado)";
+            alert(`Actividad finalizada. Duración registrada.`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Asignamos las variables de elementos aquí, cuando existen en el DOM
+            display = document.getElementById('chronometer-display');
+            btnInicio = document.getElementById('btn-inicio');
+            btnFin = document.getElementById('btn-fin');
+            btnSubmit = document.getElementById('btn-submit-registro');
+
+            btnInicio.addEventListener('click', iniciarCronometro);
+            btnFin.addEventListener('click', finalizarCronometro);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const operario = urlParams.get('user') || 'Desconocido';
+            document.getElementById('nombre-operario').textContent = operario;
+            document.getElementById('operario').value = operario;
+        });
+
+        document.getElementById('registroForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            if (!startTime || !endTime) {
+                alert("Por favor, inicia y finaliza la actividad con los botones correspondientes antes de registrar.");
+                return; 
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const movimiento = document.getElementById('tipoMovimiento').value;
+            const paladas = parseInt(document.getElementById('numPaladas').value);
+            const pesoKilosPorPalada = PESO_POR_PALADA[movimiento] || 0;
+            calculatedWeight = paladas * pesoKilosPorPalada;
+            
+            formData.append('pesoCalculado', calculatedWeight);
+
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', 
+                body: formData
+            })
+            .then(response => {
+                console.log('Datos enviados con éxito a Google Sheets.');
+                
+                document.getElementById('res-movimiento').textContent = movimiento;
+                document.getElementById('res-duracion').textContent = display.textContent;
+                document.getElementById('res-paladas').textContent = paladas;
+                document.getElementById('res-peso').textContent = `${calculatedWeight.toLocaleString('es-CO')} Kg`;
+                document.getElementById('resultado-registro').style.display = 'block';
+
+                alert(`¡Registro Exitoso! Los datos se han guardado en la nube.`);
+
+                // Resetear para el próximo registro
+                startTime = null;
+                endTime = null;
+                btnInicio.disabled = false;
+                btnFin.disabled = true;
+                display.textContent = "00:00:00";
+                form.reset(); 
+            })
+            .catch(error => {
+                console.error('Error al enviar los datos:', error);
+                alert('Ocurrió un error al intentar guardar los datos. Revisa la consola para más detalles.');
+            });
+        });
+    </script>
+</body>
+</html>
