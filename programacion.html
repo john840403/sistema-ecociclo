@@ -2,22 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Programación - ECOCICLO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Programación - Biociclo</title>
     <style>
-        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        .nav-superior { background: #0056b3; padding: 15px; color: white; }
-        .btn-volver { color: white; text-decoration: none; border: 1px solid white; padding: 8px 15px; border-radius: 5px; }
-        .contenedor-iframe { width: 100%; height: calc(100vh - 60px); }
-        iframe { width: 100%; height: 100%; border: none; }
+        /* Eliminamos márgenes para que el Excel use toda la pantalla del celular */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* Evita el scroll doble */
+            background-color: #f4f4f4;
+        }
+
+        /* Estenedor del iframe para que sea responsivo */
+        .contenedor-excel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding-top: 50px; /* Espacio para el botón volver */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Botón para regresar al menú principal (estilo marca) */
+        .btn-volver {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #87BB00; /* Tu verde principal */
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-    <div class="nav-superior">
-        <a href="index.html" class="btn-volver">← VOLVER</a>
+
+    <a href="index.html" class="btn-volver">⬅ Volver al Menú</a>
+
+    <div class="contenedor-excel">
+        <iframe src="https://biociclosas.sharepoint.com/sites/Produccin/_layouts/15/Doc.aspx?sourcedoc={c712f7eb-3f50-4711-b22b-3bb88749ccfe}&action=embedview&wdAllowInteractivity=True&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True"></iframe>
     </div>
 
-    <div class="contenedor-iframe">
-        <iframe frameborder="0" scrolling="no" src="https://biociclosas.sharepoint.com/sites/Produccin/_layouts/15/Doc.aspx?sourcedoc={c712f7eb-3f50-4711-b22b-3bb88749ccfe}&action=embedview&wdAllowInteractivity=False&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True"></iframe>
-    </div>
 </body>
 </html>
