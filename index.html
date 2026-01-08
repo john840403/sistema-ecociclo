@@ -30,12 +30,11 @@
 
        /* 3. Posicionamiento y tamaño de Logos (Responsivo) */
         
-        #logo-izquierda {
+      #logo-izquierda {
             position: absolute;
             top: 15px;
             left: 20px;
-            width: 350px; 
-            max-width: 45%; /* No permite que ocupe más de casi la mitad de la pantalla */
+            width: clamp(140px, 25vw, 350px); /* Ajuste fluido */
             height: auto;
             z-index: 10;
         }
@@ -44,8 +43,7 @@
             position: absolute;
             top: 15px;
             right: 20px;
-            width: 180px; 
-            max-width: 35%; /* Ajuste proporcional para el logo derecho */
+            width: clamp(80px, 15vw, 180px); /* Ajuste fluido para Ciclofértil */
             height: auto;
             z-index: 10;
         }
@@ -182,7 +180,7 @@
 
     <nav>
     <ul>
-        <li><a href="informe.html">Informe</a></li>
+        <li><a href="Movimientos Cargadores Planta.xlsx" target="_blank">Informe</a></li>
         <li><a href="programacion.html">Programación</a></li>
         <li><a href="checklist.html">Lista de Chequeo</a></li>
     </ul>
