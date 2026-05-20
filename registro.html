@@ -19,6 +19,8 @@
         #btn-fin { background-color: #dc3545; /* Rojo para fin */ }
         #chronometer-display { text-align: center; font-size: 1.2em; font-weight: bold; margin-bottom: 15px; color: #572E13; }
         
+        /* Contenedores dinámicos */
+        .grupo-dinamico { display: block; }
     </style>
 </head>
 <body>
@@ -53,6 +55,7 @@
                 <option value="Mover Fino">Mover Fino</option>
                 <option value="Recoger Lote">Recoger Lote</option>
                 <option value="Surtir Empaque">Surtir Empaque</option>
+                <option value="Proceso">Proceso</option>
             </select>
             
             <div class="time-controls">
@@ -61,8 +64,17 @@
             </div>
             <div id="chronometer-display">00:00:00</div>
 
-            <label for="numPaladas">Número de Paladas:</label>
-            <input type="number" id="numPaladas" name="numPaladas" min="1" required>
+            <!-- Contenedor de Paladas (Por defecto visible) -->
+            <div id="contenedor-paladas" class="grupo-dinamico">
+                <label for="numPaladas">Número de Paladas:</label>
+                <input type="number" id="numPaladas" name="numPaladas" min="1" required>
+            </div>
+
+            <!-- Contenedor de Kilogramos Totales (Por defecto oculto) -->
+            <div id="contenedor-kilogramos" class="grupo-dinamico" style="display: none;">
+                <label for="kilosTotales">Kilogramos Totales del Bache:</label>
+                <input type="number" id="kilosTotales" name="kilosTotales" min="1">
+            </div>
 
             <button type="submit" id="btn-submit-registro">Registrar Movimiento</button>
         </form>
@@ -71,8 +83,8 @@
             <h3>Registro Exitoso:</h3>
             <p>Movimiento: <strong id="res-movimiento"></strong></p>
             <p>Duración: <strong id="res-duracion"></strong></p>
-            <p>Paladas: <strong id="res-paladas"></strong></p>
-            <p>Peso Estimado: <strong id="res-peso"></strong></p>
+            <p id="vista-res-paladas">Paladas: <strong id="res-paladas"></strong></p>
+            <p>Peso Total: <strong id="res-peso"></strong></p>
         </div>
     </div>
 
@@ -92,7 +104,6 @@
         let startTime = null;
         let endTime = null;
         let timerInterval = null;
-        // Obtenemos referencias a los elementos una vez que el DOM esté cargado
         let display, btnInicio, btnFin, btnSubmit;
         let calculatedWeight = 0; 
 
@@ -108,7 +119,6 @@
             startTime = new Date();
             btnInicio.disabled = true;
             btnFin.disabled = false;
-            // No ocultamos el botón de submit, solo validamos al final
             timerInterval = setInterval(() => {
                 const now = new Date();
                 const diffSeconds = Math.round((now - startTime) / 1000);
@@ -131,7 +141,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Asignamos las variables de elementos aquí, cuando existen en el DOM
             display = document.getElementById('chronometer-display');
             btnInicio = document.getElementById('btn-inicio');
             btnFin = document.getElementById('btn-fin');
@@ -144,6 +153,31 @@
             const operario = urlParams.get('user') || 'Desconocido';
             document.getElementById('nombre-operario').textContent = operario;
             document.getElementById('operario').value = operario;
+
+            // Escuchar cambios en la actividad elegida para mostrar/ocultar campos
+            const selectorActividad = document.getElementById('tipoMovimiento');
+            const contPaladas = document.getElementById('contenedor-paladas');
+            const contKilos = document.getElementById('contenedor-kilogramos');
+            const inputPaladas = document.getElementById('numPaladas');
+            const inputKilos = document.getElementById('kilosTotales');
+
+            selectorActividad.addEventListener('change', function() {
+                if (this.value === 'Proceso') {
+                    contPaladas.style.display = 'none';
+                    inputPaladas.removeAttribute('required');
+                    inputPaladas.value = ''; // Limpiar valor
+
+                    contKilos.style.display = 'block';
+                    inputKilos.setAttribute('required', 'true');
+                } else {
+                    contPaladas.style.display = 'block';
+                    inputPaladas.setAttribute('required', 'true');
+
+                    contKilos.style.display = 'none';
+                    inputKilos.removeAttribute('required');
+                    inputKilos.value = ''; // Limpiar valor
+                }
+            });
         });
 
         document.getElementById('registroForm').addEventListener('submit', function(event) {
@@ -158,10 +192,18 @@
             const formData = new FormData(form);
             
             const movimiento = document.getElementById('tipoMovimiento').value;
-            const paladas = parseInt(document.getElementById('numPaladas').value);
-            const pesoKilosPorPalada = PESO_POR_PALADA[movimiento] || 0;
-            calculatedWeight = paladas * pesoKilosPorPalada;
             
+            // Lógica de cálculo condicional según la actividad
+            if (movimiento === 'Proceso') {
+                calculatedWeight = parseInt(document.getElementById('kilosTotales').value) || 0;
+                formData.append('numPaladas', 0); // Enviamos 0 paladas a Sheets para no dejar vacíos
+            } else {
+                const paladas = parseInt(document.getElementById('numPaladas').value) || 0;
+                const pesoKilosPorPalada = PESO_POR_PALADA[movimiento] || 0;
+                calculatedWeight = paladas * pesoKilosPorPalada;
+            }
+            
+            // Adjuntamos el peso definitivo calculado o digitado
             formData.append('pesoCalculado', calculatedWeight);
 
             fetch(APPS_SCRIPT_URL, {
@@ -174,19 +216,33 @@
                 
                 document.getElementById('res-movimiento').textContent = movimiento;
                 document.getElementById('res-duracion').textContent = display.textContent;
-                document.getElementById('res-paladas').textContent = paladas;
+                
+                // Ajustar el recuadro gris final según la actividad
+                if (movimiento === 'Proceso') {
+                    document.getElementById('vista-res-paladas').style.display = 'none';
+                } else {
+                    document.getElementById('vista-res-paladas').style.display = 'block';
+                    document.getElementById('res-paladas').textContent = document.getElementById('numPaladas').value;
+                }
+                
                 document.getElementById('res-peso').textContent = `${calculatedWeight.toLocaleString('es-CO')} Kg`;
                 document.getElementById('resultado-registro').style.display = 'block';
 
                 alert(`¡Registro Exitoso! Los datos se han guardado en la nube.`);
 
-                // Resetear para el próximo registro
+                // Resetear interfaz para el próximo registro
                 startTime = null;
                 endTime = null;
                 btnInicio.disabled = false;
                 btnFin.disabled = true;
                 display.textContent = "00:00:00";
+                
                 form.reset(); 
+                // Asegurar que tras el reset el formulario muestre paladas por defecto
+                document.getElementById('contenedor-paladas').style.display = 'block';
+                document.getElementById('numPaladas').setAttribute('required', 'true');
+                document.getElementById('contenedor-kilogramos').style.display = 'none';
+                document.getElementById('kilosTotales').removeAttribute('required');
             })
             .catch(error => {
                 console.error('Error al enviar los datos:', error);
